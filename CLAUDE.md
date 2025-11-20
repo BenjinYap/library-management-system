@@ -1,0 +1,1 @@
+* Never run prisma commands for me
