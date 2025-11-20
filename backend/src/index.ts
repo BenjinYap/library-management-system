@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import booksRouter from './routes/books.js';
-import bookCopiesRouter from './routes/bookCopies.js';
-import usersRouter from './routes/users.js';
+import checkoutRouter from './routes/checkout.js';
+import returnRouter from './routes/return.js';
 
 dotenv.config();
 
@@ -21,8 +21,8 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/books', booksRouter);
-app.use('/api/book-copies', bookCopiesRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/checkout', checkoutRouter);
+app.use('/api/return', returnRouter);
 
 // 404 handler
 app.use((req, res) => {
