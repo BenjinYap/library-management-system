@@ -1,73 +1,159 @@
-# React + TypeScript + Vite
+# Library Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack library management system built with React, TypeScript, Express, and MySQL.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS
+- **Backend**: Express, TypeScript, Prisma ORM
+- **Database**: MySQL 8.0
+- **Architecture**: Monorepo with npm workspaces
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js (v18 or higher)
+- Docker and Docker Compose
+- npm
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. Install Dependencies
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This will install dependencies for both frontend and backend workspaces.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Start the MySQL Database
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+docker compose up -d
 ```
+
+This will start a MySQL 8.0 container on port 3306.
+
+### 3. Set Up the Database
+
+```bash
+# Generate Prisma Client
+npm run prisma:generate -w backend
+
+# Run database migrations
+npm run prisma:migrate -w backend
+```
+
+### 4. Start the Development Servers
+
+```bash
+npm run dev
+```
+
+This will start both the frontend (on `http://localhost:5173`) and backend (on `http://localhost:3001`) with hot reload enabled.
+
+## Available Scripts
+
+### Root Level
+
+- `npm run dev` - Start both frontend and backend in development mode
+- `npm run build` - Build both frontend and backend
+- `npm run frontend` - Start only the frontend
+- `npm run backend` - Start only the backend
+
+### Frontend (use `-w frontend`)
+
+- `npm run dev -w frontend` - Start Vite dev server
+- `npm run build -w frontend` - Build for production
+- `npm run lint -w frontend` - Run ESLint
+
+### Backend (use `-w backend`)
+
+- `npm run dev -w backend` - Start Express server with hot reload
+- `npm run build -w backend` - Build TypeScript to JavaScript
+- `npm run start -w backend` - Start production server
+- `npm run prisma:generate -w backend` - Generate Prisma Client
+- `npm run prisma:migrate -w backend` - Run database migrations
+- `npm run prisma:studio -w backend` - Open Prisma Studio
+
+## Project Structure
+
+```
+├── frontend/              # React frontend
+│   ├── src/
+│   │   ├── App.tsx       # Main application component
+│   │   ├── main.tsx      # Application entry point
+│   │   └── index.css     # Global styles with Tailwind
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── backend/               # Express backend
+│   ├── src/
+│   │   ├── index.ts      # Server entry point
+│   │   └── routes/       # API route handlers
+│   │       ├── books.ts
+│   │       ├── bookCopies.ts
+│   │       └── users.ts
+│   ├── prisma/
+│   │   └── schema.prisma # Database schema
+│   ├── .env              # Environment variables
+│   └── package.json
+│
+├── docker-compose.yml     # MySQL container configuration
+└── package.json           # Root workspace configuration
+```
+
+## Database Schema
+
+### User
+- Defines a person who has access to the library
+- Fields: id, fullName, createdAt, updatedAt
+
+### Book
+- Defines a unique book
+- Fields: id, title, author, publishDate, createdAt, updatedAt
+
+### BookCopy
+- Defines a copy of a Book (multiple copies of same book)
+- Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED), createdAt, updatedAt
+
+### BookCopyLendingHistory
+- Tracks borrow/return history
+- Fields: id, bookCopyId, userId, action (BORROWED/RETURNED), datetime
+
+## API Endpoints
+
+### Books
+- `GET /api/books` - Get all books
+- `GET /api/books/:id` - Get a specific book
+- `POST /api/books` - Create a new book
+
+### Book Copies
+- `POST /api/book-copies` - Create a new book copy
+- `POST /api/book-copies/:id/borrow` - Borrow a book copy
+- `POST /api/book-copies/:id/return` - Return a book copy
+
+### Users
+- `GET /api/users` - Get all users
+- `GET /api/users/:id` - Get a specific user
+- `POST /api/users` - Create a new user
+- `GET /api/users/:id/history` - Get borrowing history for a user
+
+## Development
+
+The project is set up with hot reload for both frontend and backend:
+
+- Frontend uses Vite's HMR (Hot Module Replacement)
+- Backend uses `tsx watch` for automatic restarts on file changes
+
+Changes to the code will be reflected immediately without manual restarts.
+
+## Next Steps
+
+The basic structure is in place. To complete the application:
+
+1. Implement Prisma queries in the route handlers
+2. Add frontend components for borrowing/returning books
+3. Add user management UI
+4. Implement error handling and validation
+5. Add authentication (if needed)
+6. Write tests

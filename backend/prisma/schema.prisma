@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                        Int                       @id @default(autoincrement())
+  fullName                  String
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  bookCopies                BookCopy[]
+  bookCopyLendingHistories  BookCopyLendingHistory[]
+
+  @@map("users")
+}
+
+model Book {
+  id          Int        @id @default(autoincrement())
+  title       String
+  author      String
+  publishDate DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  bookCopies  BookCopy[]
+
+  @@map("books")
+}
+
+model BookCopy {
+  id                        Int                       @id @default(autoincrement())
+  bookId                    Int
+  currentUserId             Int?
+  status                    BookCopyStatus            @default(AVAILABLE)
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  book                      Book                      @relation(fields: [bookId], references: [id])
+  currentUser               User?                     @relation(fields: [currentUserId], references: [id])
+  bookCopyLendingHistories  BookCopyLendingHistory[]
+
+  @@map("book_copies")
+}
+
+model BookCopyLendingHistory {
+  id          Int                        @id @default(autoincrement())
+  bookCopyId  Int
+  userId      Int
+  action      BookCopyLendingAction
+  datetime    DateTime                   @default(now())
+  bookCopy    BookCopy                   @relation(fields: [bookCopyId], references: [id])
+  user        User                       @relation(fields: [userId], references: [id])
+
+  @@map("book_copy_lending_histories")
+}
+
+enum BookCopyStatus {
+  AVAILABLE
+  BORROWED
+}
+
+enum BookCopyLendingAction {
+  BORROWED
+  RETURNED
+}
