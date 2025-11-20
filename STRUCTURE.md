@@ -85,9 +85,14 @@ frontend/
 backend/
 ├── src/
 │   ├── routes/            # API route handlers
-│   │   ├── books.ts       # Book-related endpoints
-│   │   ├── bookCopies.ts  # BookCopy-related endpoints
-│   │   └── users.ts       # User-related endpoints
+│   │   ├── books.ts       # GET /api/books - List available books
+│   │   ├── checkout.ts    # POST /api/checkout - Checkout a book
+│   │   └── return.ts      # POST /api/return - Return a book
+│   ├── __tests__/         # Unit tests
+│   │   ├── setup.ts       # Jest test setup
+│   │   ├── prisma-mock.ts # Prisma mocking configuration
+│   │   └── books.test.ts  # Books API unit tests
+│   ├── prisma.ts          # Prisma client singleton
 │   └── index.ts           # Express server entry point
 ├── prisma/
 │   ├── migrations/        # Database migration history
@@ -95,6 +100,7 @@ backend/
 │   └── seed.ts            # Database seeding script
 ├── node_modules/          # Backend dependencies
 ├── package.json           # Backend dependencies & scripts
+├── jest.config.js         # Jest configuration for testing
 ├── tsconfig.json          # TypeScript configuration
 ├── .env                   # Environment variables (not committed)
 └── .env.example           # Environment template
@@ -103,8 +109,14 @@ backend/
 ### Backend Key Files
 
 - **`src/index.ts`**: Express server setup, CORS configuration, route mounting
+- **`src/prisma.ts`**: Prisma client singleton used across the application
+- **`src/routes/books.ts`**: Books API endpoint (fully implemented with Prisma)
+- **`src/routes/checkout.ts`**: Checkout API endpoint (placeholder, not yet implemented)
+- **`src/routes/return.ts`**: Return API endpoint (placeholder, not yet implemented)
 - **`prisma/schema.prisma`**: Database schema with 4 models (User, Book, BookCopy, BookCopyLendingHistory)
 - **`prisma/seed.ts`**: Database seeding script for initial data
+- **`jest.config.js`**: Jest test configuration with ts-jest and ESM support
+- **`src/__tests__/prisma-mock.ts`**: Prisma mocking setup using jest-mock-extended
 
 ## Database Schema
 
@@ -146,6 +158,9 @@ The Prisma schema defines the following models:
 - `npm run dev` - Start Express server with tsx watch (port 3001)
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm run start` - Run compiled JavaScript
+- `npm test` - Run unit tests with Jest
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
 - `npm run prisma:generate` - Generate Prisma Client
 - `npm run prisma:migrate` - Run database migrations
 - `npm run prisma:studio` - Open Prisma Studio GUI
@@ -153,11 +168,11 @@ The Prisma schema defines the following models:
 
 ## API Endpoints
 
-The backend exposes the following API routes (mounted at different paths):
+The backend exposes the following API routes:
 
-- **Books**: `/api/books/*` - Book catalog operations
-- **Book Copies**: `/api/book-copies/*` - Physical copy management
-- **Users**: `/api/users/*` - User management
+- **GET /api/books** - Get all books that are available for checkout (returns books with at least one available copy)
+- **POST /api/checkout** - Checkout a single book (not yet implemented)
+- **POST /api/return** - Return a single book (not yet implemented)
 
 Base URL: `http://localhost:3001`
 
