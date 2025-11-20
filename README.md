@@ -41,7 +41,14 @@ npm run prisma:generate -w backend
 
 # Run database migrations
 npm run prisma:migrate -w backend
+
+# Seed the database with sample data
+npm run seed
 ```
+
+This will create:
+- 10 unique books with 1-3 copies each
+- A user named "Benjin"
 
 ### 4. Start the Development Servers
 
@@ -59,6 +66,7 @@ This will start both the frontend (on `http://localhost:5173`) and backend (on `
 - `npm run build` - Build both frontend and backend
 - `npm run frontend` - Start only the frontend
 - `npm run backend` - Start only the backend
+- `npm run seed` - Seed the database with sample data
 
 ### Frontend (use `-w frontend`)
 
@@ -71,6 +79,7 @@ This will start both the frontend (on `http://localhost:5173`) and backend (on `
 - `npm run dev -w backend` - Start Express server with hot reload
 - `npm run build -w backend` - Build TypeScript to JavaScript
 - `npm run start -w backend` - Start production server
+- `npm run seed -w backend` - Seed the database with sample data
 - `npm run prisma:generate -w backend` - Generate Prisma Client
 - `npm run prisma:migrate -w backend` - Run database migrations
 - `npm run prisma:studio -w backend` - Open Prisma Studio

@@ -11,7 +11,8 @@
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "build": "npm run build -w frontend && npm run build -w backend",
     "frontend": "npm run dev -w frontend",
-    "backend": "npm run dev -w backend"
+    "backend": "npm run dev -w backend",
+    "seed": "npm run seed -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
