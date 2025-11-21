@@ -13,6 +13,19 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'bookId and userId are required' });
     }
 
+    // Check if user already has this specific book checked out
+    const existingBorrow = await prisma.bookCopy.findFirst({
+      where: {
+        bookId: parseInt(bookId),
+        currentUserId: parseInt(userId),
+        status: 'BORROWED'
+      }
+    });
+
+    if (existingBorrow) {
+      return res.status(400).json({ error: 'You already have a copy of this book checked out. Please return it before checking out another copy.' });
+    }
+
     // Find the first available copy of the book
     const availableCopy = await prisma.bookCopy.findFirst({
       where: {

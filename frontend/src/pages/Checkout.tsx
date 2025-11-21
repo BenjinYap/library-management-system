@@ -6,6 +6,7 @@ interface Book {
   title: string
   author: string
   availableCopies: number
+  borrowedByUser?: boolean
 }
 
 function Checkout() {
@@ -16,13 +17,19 @@ function Checkout() {
   const [checkingOut, setCheckingOut] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [userHasThisBook, setUserHasThisBook] = useState(false)
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/books')
+    const userId = 1 // Hardcoded user ID for now
+    fetch(`http://localhost:3001/api/books?userId=${userId}`)
       .then(res => res.json())
       .then((data: Book[]) => {
         const foundBook = data.find(b => b.id === parseInt(bookId || '0'))
         setBook(foundBook || null)
+
+        // Check if user already has this specific book borrowed
+        setUserHasThisBook(foundBook?.borrowedByUser === true)
+
         setLoading(false)
       })
       .catch(err => {
@@ -127,6 +134,14 @@ function Checkout() {
           </p>
         </div>
 
+        {userHasThisBook && (
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-sm text-yellow-800">
+              <span className="font-medium">Warning:</span> You already have a copy of this book checked out. Please return it before checking out another copy.
+            </p>
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{error}</p>
@@ -136,7 +151,7 @@ function Checkout() {
         <div className="flex gap-3">
           <button
             onClick={handleCheckout}
-            disabled={checkingOut}
+            disabled={checkingOut || userHasThisBook}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {checkingOut ? 'Checking out...' : 'Confirm Checkout'}
