@@ -139,4 +139,4 @@ the website and background queue processor to be scaled at different capacities.
 
 ### Models
 
-You can see the actual models in `backend/prisma/schema.prisma`.
+You can see the actual models in `backend/prisma/schema.prisma`. 
