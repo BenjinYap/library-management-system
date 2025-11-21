@@ -29,6 +29,12 @@ function Navigation() {
                 Home
               </Link>
               <Link
+                to="/borrowed"
+                className={`${isActive('/borrowed')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
+              >
+                Borrowed Books
+              </Link>
+              <Link
                 to="/about"
                 className={`${isActive('/about')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
               >

@@ -32,6 +32,59 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/books/borrowed - Get all borrowed books for a user
+// Query params: userId (required) - the user whose borrowed books to fetch
+router.get('/borrowed', async (req, res) => {
+  try {
+    const userId = req.query.userId ? parseInt(req.query.userId as string) : null;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'userId query parameter is required' });
+    }
+
+    // Find all borrowed copies by this user
+    const borrowedCopies = await prisma.bookCopy.findMany({
+      where: {
+        currentUserId: userId,
+        status: 'BORROWED'
+      },
+      include: {
+        book: true
+      }
+    });
+
+    // Get the borrowed datetime for each copy
+    const borrowedBooksWithDatetime = await Promise.all(
+      borrowedCopies.map(async (copy) => {
+        // Find the most recent BORROWED action for this copy
+        const borrowedHistory = await prisma.bookCopyLendingHistory.findFirst({
+          where: {
+            bookCopyId: copy.id,
+            userId: userId,
+            action: 'BORROWED'
+          },
+          orderBy: {
+            datetime: 'desc'
+          }
+        });
+
+        return {
+          id: copy.book.id,
+          title: copy.book.title,
+          author: copy.book.author,
+          borrowedDatetime: borrowedHistory?.datetime || null,
+          bookCopyId: copy.id
+        };
+      })
+    );
+
+    res.json(borrowedBooksWithDatetime);
+  } catch (error) {
+    console.error('Error fetching borrowed books:', error);
+    res.status(500).json({ error: 'Failed to fetch borrowed books' });
+  }
+});
+
 // GET /api/books/:bookId/borrowed-info - Get borrowed book info with datetime
 // Query params: userId (required) - the user who borrowed the book
 router.get('/:bookId/borrowed-info', async (req, res) => {
