@@ -78,7 +78,7 @@ frontend/
 - **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting
 - **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout buttons
 - **`src/pages/About.tsx`**: Static about page with project information
-- **`src/pages/Checkout.tsx`**: Book checkout page (placeholder)
+- **`src/pages/Checkout.tsx`**: Book checkout page with book details display, checkout confirmation, success/error handling
 - **`src/main.tsx`**: ReactDOM render entry point
 
 ## Backend Structure (`/backend`)
@@ -113,7 +113,7 @@ backend/
 - **`src/index.ts`**: Express server setup, CORS configuration, route mounting
 - **`src/prisma.ts`**: Prisma client singleton used across the application
 - **`src/routes/books.ts`**: Books API endpoint (fully implemented with Prisma)
-- **`src/routes/checkout.ts`**: Checkout API endpoint (placeholder, not yet implemented)
+- **`src/routes/checkout.ts`**: Checkout API endpoint with race condition handling at SQL level
 - **`src/routes/return.ts`**: Return API endpoint (placeholder, not yet implemented)
 - **`prisma/schema.prisma`**: Database schema with 4 models (User, Book, BookCopy, BookCopyLendingHistory)
 - **`prisma/seed.ts`**: Database seeding script for initial data
@@ -173,7 +173,7 @@ The Prisma schema defines the following models:
 The backend exposes the following API routes:
 
 - **GET /api/books** - Get all books that are available for checkout (returns books with at least one available copy)
-- **POST /api/checkout** - Checkout a single book (not yet implemented)
+- **POST /api/checkout** - Checkout a single book copy (requires bookId and userId in request body, handles race conditions at SQL level)
 - **POST /api/return** - Return a single book (not yet implemented)
 
 Base URL: `http://localhost:3001`
