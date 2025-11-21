@@ -71,4 +71,90 @@ describe('Books API', () => {
       expect(response.body).toEqual([]);
     });
   });
+
+  describe('GET /api/books/borrowed', () => {
+    it('should return 400 when userId query parameter is missing', async () => {
+      const response = await request(app).get('/api/books/borrowed');
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'userId query parameter is required' });
+    });
+
+    it('should return empty array when user has no borrowed books', async () => {
+      prismaMock.bookCopy.findMany.mockResolvedValue([]);
+
+      const response = await request(app).get('/api/books/borrowed?userId=1');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
+    });
+
+    it('should return two borrowed books with correct datetimes', async () => {
+      const borrowedDate1 = new Date('2025-01-15T10:00:00Z');
+      const borrowedDate2 = new Date('2025-01-16T14:30:00Z');
+
+      const mockBorrowedCopies = [
+        {
+          id: 1,
+          bookId: 1,
+          currentUserId: 1,
+          status: 'BORROWED',
+          book: {
+            id: 1,
+            title: 'The Great Gatsby',
+            author: 'F. Scott Fitzgerald',
+          },
+        },
+        {
+          id: 2,
+          bookId: 2,
+          currentUserId: 1,
+          status: 'BORROWED',
+          book: {
+            id: 2,
+            title: '1984',
+            author: 'George Orwell',
+          },
+        },
+      ];
+
+      prismaMock.bookCopy.findMany.mockResolvedValue(mockBorrowedCopies as any);
+
+      prismaMock.bookCopyLendingHistory.findFirst
+        .mockResolvedValueOnce({
+          id: 1,
+          bookCopyId: 1,
+          userId: 1,
+          action: 'BORROWED',
+          datetime: borrowedDate1,
+        } as any)
+        .mockResolvedValueOnce({
+          id: 2,
+          bookCopyId: 2,
+          userId: 1,
+          action: 'BORROWED',
+          datetime: borrowedDate2,
+        } as any);
+
+      const response = await request(app).get('/api/books/borrowed?userId=1');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([
+        {
+          id: 1,
+          title: 'The Great Gatsby',
+          author: 'F. Scott Fitzgerald',
+          borrowedDatetime: borrowedDate1.toISOString(),
+          bookCopyId: 1,
+        },
+        {
+          id: 2,
+          title: '1984',
+          author: 'George Orwell',
+          borrowedDatetime: borrowedDate2.toISOString(),
+          bookCopyId: 2,
+        },
+      ]);
+    });
+  });
 });
