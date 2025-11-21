@@ -62,6 +62,13 @@ Browse the local MySQL with:
 mysql -h 127.0.0.1 -u root -ppassword library_management
 ```
 
+# Usage
+
+* Home page shows the list of all available books.
+* Checkout page lets you check out the book, but will fail if you already have a copy checked out.
+* Borrowed Books page in the top navigation shows you a list of all borrowed books that you can also return.
+* Return page lets you return the book.
+
 # System Design
 
 ## Frontend
@@ -91,7 +98,7 @@ Similar to the UserContext, a BookContext of some kind could be used as follows:
 
 * A cache of all available books.
   * This will populated using the backend endpoint if it doesn't exist in the context.
-  * The cache could remain fresh until the user manually refreshes it via a Refresh button on the home page.
+  * The cache could remain fresh until the user manually refreshes it via a Refresh button on the home page, or until the user checks out or returns a book.
 * A cache of all borrowed books.
   * This will be populated from the backend endpoint if it doesn't exist in the context.
   * The cache could remain fresh until the user checks out or returns a book, after which the cache will refresh, since we know the borrowed books state will not change unless those actions occur.
