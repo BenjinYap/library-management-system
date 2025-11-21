@@ -10,8 +10,6 @@ datasource db {
 model User {
   id                        Int                       @id @default(autoincrement())
   fullName                  String
-  createdAt                 DateTime                  @default(now())
-  updatedAt                 DateTime                  @updatedAt
   bookCopies                BookCopy[]
   bookCopyLendingHistories  BookCopyLendingHistory[]
 
@@ -22,9 +20,6 @@ model Book {
   id          Int        @id @default(autoincrement())
   title       String
   author      String
-  publishDate DateTime
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
   bookCopies  BookCopy[]
 
   @@map("books")
@@ -35,8 +30,6 @@ model BookCopy {
   bookId                    Int
   currentUserId             Int?
   status                    BookCopyStatus            @default(AVAILABLE)
-  createdAt                 DateTime                  @default(now())
-  updatedAt                 DateTime                  @updatedAt
   book                      Book                      @relation(fields: [bookId], references: [id])
   currentUser               User?                     @relation(fields: [currentUserId], references: [id])
   bookCopyLendingHistories  BookCopyLendingHistory[]

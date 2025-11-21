@@ -5,7 +5,6 @@ interface BorrowedBook {
   id: number
   title: string
   author: string
-  publishDate: string
   borrowedDatetime: string
   bookCopyId: number
 }

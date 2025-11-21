@@ -28,7 +28,6 @@ router.get('/', async (req, res) => {
           id: book.id,
           title: book.title,
           author: book.author,
-          publishDate: book.publishDate,
           availableCopies,
           borrowedByUser
         };
@@ -89,7 +88,6 @@ router.get('/:bookId/borrowed-info', async (req, res) => {
       id: book.id,
       title: book.title,
       author: book.author,
-      publishDate: book.publishDate,
       borrowedDatetime: borrowedHistory?.datetime || null,
       bookCopyId: borrowedCopy.id
     });

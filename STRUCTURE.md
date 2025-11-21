@@ -130,15 +130,15 @@ The Prisma schema defines the following models:
 
 ### Models
 1. **User**: Library members with lending history
-   - Fields: id, fullName, createdAt, updatedAt
+   - Fields: id, fullName
    - Relations: bookCopies, bookCopyLendingHistories
 
 2. **Book**: Book catalog entries
-   - Fields: id, title, author, publishDate, createdAt, updatedAt
+   - Fields: id, title, author
    - Relations: bookCopies (one-to-many)
 
 3. **BookCopy**: Physical copies of books
-   - Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED), createdAt, updatedAt
+   - Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED)
    - Relations: book, currentUser, bookCopyLendingHistories
 
 4. **BookCopyLendingHistory**: Audit log of borrowing/returns
