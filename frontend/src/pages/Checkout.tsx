@@ -111,7 +111,6 @@ function Checkout() {
             </div>
             <h2 className="text-2xl font-semibold mb-2 text-green-600">Checkout Successful!</h2>
             <p className="text-gray-600 mb-4">You have successfully checked out "{book.title}".</p>
-            <p className="text-sm text-gray-500">Redirecting you to the home page...</p>
           </div>
         </div>
       </div>
