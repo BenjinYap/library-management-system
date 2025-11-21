@@ -1,168 +1,96 @@
 # Library Management System
 
-A full-stack library management system built with React, TypeScript, Express, and MySQL.
+A monorepo for an online library book checkout/return application.
 
-## Tech Stack
-
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS
-- **Backend**: Express, TypeScript, Prisma ORM
-- **Database**: MySQL 8.0
-- **Architecture**: Monorepo with npm workspaces
+# Local Development
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
-- Docker and Docker Compose
-- npm
+* Node (tested with 22.13.0)
+* NPM (tested with 11.4.2)
+* Docker + Docker Compose
 
-## Getting Started
+Install all dependencies:
 
-### 1. Install Dependencies
-
-```bash
-npm install
+```
+npm ci
 ```
 
-This will install dependencies for both frontend and backend workspaces.
+Launch the local Docker container for MySQL:
 
-### 2. Start the MySQL Database
-
-```bash
-docker compose up -d
+```
+sudo docker compose up
 ```
 
-This will start a MySQL 8.0 container on port 3306.
+Run the MySQL seed script to prepopulate with some data:
 
-### 3. Set Up the Database
-
-```bash
-# Generate Prisma Client
-npm run prisma:generate -w backend
-
-# Run database migrations
-npm run prisma:migrate -w backend
-
-# Seed the database with sample data
+```
 npm run seed
 ```
 
-This will create:
-- 10 unique books with 1-3 copies each
-- A user named "Benjin"
+Start the frontend and backend service:
 
-### 4. Start the Development Servers
-
-```bash
+```
 npm run dev
 ```
 
-This will start both the frontend (on `http://localhost:5173`) and backend (on `http://localhost:3001`) with hot reload enabled.
+Visit the website at `http://localhost:5173/` and `http://localhost:3001/api/books`.
 
-## Available Scripts
-
-### Root Level
-
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run build` - Build both frontend and backend
-- `npm run frontend` - Start only the frontend
-- `npm run backend` - Start only the backend
-- `npm run seed` - Seed the database with sample data
-
-### Frontend (use `-w frontend`)
-
-- `npm run dev -w frontend` - Start Vite dev server
-- `npm run build -w frontend` - Build for production
-- `npm run lint -w frontend` - Run ESLint
-
-### Backend (use `-w backend`)
-
-- `npm run dev -w backend` - Start Express server with hot reload
-- `npm run build -w backend` - Build TypeScript to JavaScript
-- `npm run start -w backend` - Start production server
-- `npm run seed -w backend` - Seed the database with sample data
-- `npm run prisma:generate -w backend` - Generate Prisma Client
-- `npm run prisma:migrate -w backend` - Run database migrations
-- `npm run prisma:studio -w backend` - Open Prisma Studio
-
-## Project Structure
+Browse the local MySQL with:
 
 ```
-├── frontend/              # React frontend
-│   ├── src/
-│   │   ├── App.tsx       # Main application component
-│   │   ├── main.tsx      # Application entry point
-│   │   └── index.css     # Global styles with Tailwind
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── backend/               # Express backend
-│   ├── src/
-│   │   ├── index.ts      # Server entry point
-│   │   └── routes/       # API route handlers
-│   │       ├── books.ts
-│   │       ├── bookCopies.ts
-│   │       └── users.ts
-│   ├── prisma/
-│   │   └── schema.prisma # Database schema
-│   ├── .env              # Environment variables
-│   └── package.json
-│
-├── docker-compose.yml     # MySQL container configuration
-└── package.json           # Root workspace configuration
+mysql -h 127.0.0.1 -u root -ppassword
 ```
 
-## Database Schema
+# System Design
 
-### User
-- Defines a person who has access to the library
-- Fields: id, fullName, createdAt, updatedAt
+## Frontend
 
-### Book
-- Defines a unique book
-- Fields: id, title, author, publishDate, createdAt, updatedAt
+* TypeScript
+* React
+* SPA (React Router)
+* Vite
+* Tailwind CSS
 
-### BookCopy
-- Defines a copy of a Book (multiple copies of same book)
-- Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED), createdAt, updatedAt
+### User State
 
-### BookCopyLendingHistory
-- Tracks borrow/return history
-- Fields: id, bookCopyId, userId, action (BORROWED/RETURNED), datetime
+A form of user system is required to properly maintain a library that supports checking out and returning books to avoid
+reckless checking out of books.
 
-## API Endpoints
+A mock login system has been implemented to simulate a logged-in user. The user is managed via a UserContext to allow easy
+access to the user's information from one central location. Eventually a proper
+authentication system will be implemented within the UserContext, but for now a user is always hardcoded
+in the context.
 
-### Books
-- `GET /api/books` - Get all books
-- `GET /api/books/:id` - Get a specific book
-- `POST /api/books` - Create a new book
+### Book State
 
-### Book Copies
-- `POST /api/book-copies` - Create a new book copy
-- `POST /api/book-copies/:id/borrow` - Borrow a book copy
-- `POST /api/book-copies/:id/return` - Return a book copy
+It would be ideal to implement a form of book status caching to prevent unnecessary potentially expensive calls to
+the backend. Caching is also ideal here since the website is an SPA.
 
-### Users
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get a specific user
-- `POST /api/users` - Create a new user
-- `GET /api/users/:id/history` - Get borrowing history for a user
+Similar to the UserContext, a BookContext of some kind could be used as follows:
 
-## Development
+* A cache of all available books.
+  * This will populated using the backend endpoint if it doesn't exist in the context.
+  * The cache could remain fresh until the user manually refreshes it via a Refresh button on the home page.
+* A cache of all borrowed books.
+  * This will be populated from the backend endpoint if it doesn't exist in the context.
+  * The cache could remain fresh until the user checks out or returns a book, after which the cache will refresh, since we know the borrowed books state will not change unless those actions occur.
 
-The project is set up with hot reload for both frontend and backend:
+## Backend
 
-- Frontend uses Vite's HMR (Hot Module Replacement)
-- Backend uses `tsx watch` for automatic restarts on file changes
+* TypeScript
+* Express
 
-Changes to the code will be reflected immediately without manual restarts.
+## Database
 
-## Next Steps
+* MySQL
+* Prisma ORM
 
-The basic structure is in place. To complete the application:
+### Rationale
 
-1. Implement Prisma queries in the route handlers
-2. Add frontend components for borrowing/returning books
-3. Add user management UI
-4. Implement error handling and validation
-5. Add authentication (if needed)
-6. Write tests
+* I'm not familiar with NoSQL so I won't choose it unless I have time to learn about it.
+* All the operations required by this application should be able to be achieved using proper indexes which should help maintain performance.
+
+### Models
+
+You can see the actual models in `backend/prisma/schema.prisma`.
