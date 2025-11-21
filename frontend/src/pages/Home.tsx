@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useUser } from '../contexts/UserContext'
 
 interface Book {
   id: number
@@ -12,10 +13,12 @@ interface Book {
 function Home() {
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
-  const currentUserId = 1 // Hardcoded current user ID
+  const { userId } = useUser()
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/books?userId=${currentUserId}`)
+    if (userId === null) return
+
+    fetch(`http://localhost:3001/api/books?userId=${userId}`)
       .then(res => res.json())
       .then(data => {
         console.log('Books:', data)
@@ -26,7 +29,7 @@ function Home() {
         console.error('Error fetching books:', err)
         setLoading(false)
       })
-  }, [])
+  }, [userId])
 
   return (
     <div className="px-4 py-6 sm:px-0">

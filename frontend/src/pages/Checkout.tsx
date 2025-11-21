@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useUser } from '../contexts/UserContext'
 
 interface Book {
   id: number
@@ -12,6 +13,7 @@ interface Book {
 function Checkout() {
   const { bookId } = useParams()
   const navigate = useNavigate()
+  const { userId } = useUser()
   const [book, setBook] = useState<Book | null>(null)
   const [loading, setLoading] = useState(true)
   const [checkingOut, setCheckingOut] = useState(false)
@@ -20,7 +22,8 @@ function Checkout() {
   const [userHasThisBook, setUserHasThisBook] = useState(false)
 
   useEffect(() => {
-    const userId = 1 // Hardcoded user ID for now
+    if (userId === null) return
+
     fetch(`http://localhost:3001/api/books?userId=${userId}`)
       .then(res => res.json())
       .then((data: Book[]) => {
@@ -37,10 +40,10 @@ function Checkout() {
         setError('Failed to load book details')
         setLoading(false)
       })
-  }, [bookId])
+  }, [bookId, userId])
 
   const handleCheckout = async () => {
-    if (!book) return
+    if (!book || userId === null) return
 
     setCheckingOut(true)
     setError(null)
@@ -53,7 +56,7 @@ function Checkout() {
         },
         body: JSON.stringify({
           bookId: book.id,
-          userId: 1 // Hardcoded user ID for now
+          userId
         })
       })
 

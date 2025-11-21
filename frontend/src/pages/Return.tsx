@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useUser } from '../contexts/UserContext'
 
 interface BorrowedBook {
   id: number
@@ -12,6 +13,7 @@ interface BorrowedBook {
 function Return() {
   const { bookId } = useParams()
   const navigate = useNavigate()
+  const { userId } = useUser()
   const [book, setBook] = useState<BorrowedBook | null>(null)
   const [loading, setLoading] = useState(true)
   const [returning, setReturning] = useState(false)
@@ -19,7 +21,8 @@ function Return() {
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
-    const userId = 1 // Hardcoded user ID for now
+    if (userId === null) return
+
     fetch(`http://localhost:3001/api/books/${bookId}/borrowed-info?userId=${userId}`)
       .then(res => {
         if (!res.ok) {
@@ -36,10 +39,10 @@ function Return() {
         setError('Failed to load book details. You may not have this book checked out.')
         setLoading(false)
       })
-  }, [bookId])
+  }, [bookId, userId])
 
   const handleReturn = async () => {
-    if (!book) return
+    if (!book || userId === null) return
 
     setReturning(true)
     setError(null)
@@ -52,7 +55,7 @@ function Return() {
         },
         body: JSON.stringify({
           bookId: book.id,
-          userId: 1 // Hardcoded user ID for now
+          userId
         })
       })
 

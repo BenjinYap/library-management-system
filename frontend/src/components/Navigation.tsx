@@ -1,22 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-
-interface User {
-  id: number
-  fullName: string
-}
+import { useUser } from '../contexts/UserContext'
 
 function Navigation() {
   const location = useLocation()
-  const [user, setUser] = useState<User | null>(null)
-
-  useEffect(() => {
-    // Fetch user info for user ID 1 (hardcoded current user)
-    fetch('http://localhost:3001/api/user/1')
-      .then(res => res.json())
-      .then(data => setUser(data))
-      .catch(err => console.error('Error fetching user:', err))
-  }, [])
+  const { user } = useUser()
 
   const isActive = (path: string) => {
     return location.pathname === path

@@ -51,13 +51,15 @@ frontend/
 ├── src/
 │   ├── components/        # Reusable React components
 │   │   └── Navigation.tsx # Main navigation bar with routing and user display
+│   ├── contexts/          # React Context providers
+│   │   └── UserContext.tsx # User authentication context and provider
 │   ├── pages/             # Page-level components
 │   │   ├── Home.tsx       # Home page (book listing table with borrowed status)
 │   │   ├── About.tsx      # About page
 │   │   ├── Checkout.tsx   # Checkout page
 │   │   └── Return.tsx     # Return page (placeholder)
 │   ├── assets/            # Static assets (images, fonts)
-│   ├── App.tsx            # Root component with router setup
+│   ├── App.tsx            # Root component with router setup and UserProvider
 │   ├── main.tsx           # Application entry point
 │   └── index.css          # Global styles (Tailwind imports)
 ├── public/                # Public static files
@@ -75,12 +77,13 @@ frontend/
 
 ### Frontend Key Files
 
-- **`src/App.tsx`**: Router setup with BrowserRouter, defines routes for "/", "/about", "/checkout/:bookId", and "/return/:bookId"
-- **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting and logged-in user display in top right
-- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout/return buttons and borrowed status indicator
+- **`src/App.tsx`**: Router setup with BrowserRouter wrapped in UserProvider, defines routes for "/", "/about", "/checkout/:bookId", and "/return/:bookId"
+- **`src/contexts/UserContext.tsx`**: React Context for managing current user state, provides useUser hook for accessing user data throughout the app
+- **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting and logged-in user display in top right (uses UserContext)
+- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout/return buttons and borrowed status indicator (uses UserContext)
 - **`src/pages/About.tsx`**: Static about page with project information
-- **`src/pages/Checkout.tsx`**: Book checkout page with book details display, checkout confirmation, success/error handling, prevents checkout if user already has a copy of that specific book borrowed
-- **`src/pages/Return.tsx`**: Book return page with borrowed datetime display, return confirmation, success/error handling
+- **`src/pages/Checkout.tsx`**: Book checkout page with book details display, checkout confirmation, success/error handling, prevents checkout if user already has a copy of that specific book borrowed (uses UserContext)
+- **`src/pages/Return.tsx`**: Book return page with borrowed datetime display, return confirmation, success/error handling (uses UserContext)
 - **`src/main.tsx`**: ReactDOM render entry point
 
 ## Backend Structure (`/backend`)
