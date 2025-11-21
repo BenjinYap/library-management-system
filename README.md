@@ -59,7 +59,7 @@ Visit the website at `http://localhost:5173/` and `http://localhost:3001/api/boo
 Browse the local MySQL with:
 
 ```
-mysql -h 127.0.0.1 -u root -ppassword
+mysql -h 127.0.0.1 -u root -ppassword library_management
 ```
 
 # System Design
