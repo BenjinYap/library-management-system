@@ -36,7 +36,8 @@ router.post('/', async (req, res) => {
       },
       data: {
         status: 'AVAILABLE',
-        currentUserId: null
+        currentUserId: null,
+        borrowedDatetime: null
       }
     });
 

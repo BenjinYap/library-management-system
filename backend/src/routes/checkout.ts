@@ -47,7 +47,8 @@ router.post('/', async (req, res) => {
       },
       data: {
         status: 'BORROWED',
-        currentUserId: parseInt(userId)
+        currentUserId: parseInt(userId),
+        borrowedDatetime: new Date()
       }
     });
 

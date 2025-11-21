@@ -30,6 +30,7 @@ model BookCopy {
   bookId                    Int
   currentUserId             Int?
   status                    BookCopyStatus            @default(AVAILABLE)
+  borrowedDatetime          DateTime?
   book                      Book                      @relation(fields: [bookId], references: [id])
   currentUser               User?                     @relation(fields: [currentUserId], references: [id])
   bookCopyLendingHistories  BookCopyLendingHistory[]

@@ -1,6 +1,7 @@
 * Always mock the minimum amount of db rows required.
 * Never touch any other tests unless instructed to.
 * Never assert things that are pointless or would be caught via exception anyways, such as asserting the body exists.
+* It's fine for tests to fail if explicitly told so.
 
 # frontend
 * none so far
@@ -17,4 +18,3 @@
     * assert an empty response when the user has no borrowed books
   * test 3
     * assert two specific books are returned when the user has those two books borrowed
-    * assert the borrowed datetimes are correct

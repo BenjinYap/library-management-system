@@ -53,32 +53,13 @@ router.get('/borrowed', async (req, res) => {
       }
     });
 
-    // Get the borrowed datetime for each copy
-    const borrowedBooksWithDatetime = await Promise.all(
-      borrowedCopies.map(async (copy) => {
-        // Find the most recent BORROWED action for this copy
-        const borrowedHistory = await prisma.bookCopyLendingHistory.findFirst({
-          where: {
-            bookCopyId: copy.id,
-            userId: userId,
-            action: 'BORROWED'
-          },
-          orderBy: {
-            datetime: 'desc'
-          }
-        });
-
-        return {
-          id: copy.book.id,
-          title: copy.book.title,
-          author: copy.book.author,
-          borrowedDatetime: borrowedHistory?.datetime || null,
-          bookCopyId: copy.id
-        };
-      })
-    );
-
-    res.json(borrowedBooksWithDatetime);
+    res.json(borrowedCopies.map((copy) => ({
+      id: copy.book.id,
+      title: copy.book.title,
+      author: copy.book.author,
+      borrowedDatetime: copy.borrowedDatetime,
+      bookCopyId: copy.id
+    })));
   } catch (error) {
     console.error('Error fetching borrowed books:', error);
     res.status(500).json({ error: 'Failed to fetch borrowed books' });
@@ -118,23 +99,11 @@ router.get('/:bookId/borrowed-info', async (req, res) => {
       return res.status(404).json({ error: 'No borrowed copy found for this user' });
     }
 
-    // Find the most recent BORROWED action for this copy and user
-    const borrowedHistory = await prisma.bookCopyLendingHistory.findFirst({
-      where: {
-        bookCopyId: borrowedCopy.id,
-        userId: userId,
-        action: 'BORROWED'
-      },
-      orderBy: {
-        datetime: 'desc'
-      }
-    });
-
     res.json({
       id: book.id,
       title: book.title,
       author: book.author,
-      borrowedDatetime: borrowedHistory?.datetime || null,
+      borrowedDatetime: borrowedCopy.borrowedDatetime,
       bookCopyId: borrowedCopy.id
     });
   } catch (error) {

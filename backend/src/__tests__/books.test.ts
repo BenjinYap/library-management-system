@@ -99,6 +99,7 @@ describe('Books API', () => {
           bookId: 1,
           currentUserId: 1,
           status: 'BORROWED',
+          borrowedDatetime: borrowedDate1,
           book: {
             id: 1,
             title: 'The Great Gatsby',
@@ -110,6 +111,7 @@ describe('Books API', () => {
           bookId: 2,
           currentUserId: 1,
           status: 'BORROWED',
+          borrowedDatetime: borrowedDate2,
           book: {
             id: 2,
             title: '1984',
@@ -119,22 +121,6 @@ describe('Books API', () => {
       ];
 
       prismaMock.bookCopy.findMany.mockResolvedValue(mockBorrowedCopies as any);
-
-      prismaMock.bookCopyLendingHistory.findFirst
-        .mockResolvedValueOnce({
-          id: 1,
-          bookCopyId: 1,
-          userId: 1,
-          action: 'BORROWED',
-          datetime: borrowedDate1,
-        } as any)
-        .mockResolvedValueOnce({
-          id: 2,
-          bookCopyId: 2,
-          userId: 1,
-          action: 'BORROWED',
-          datetime: borrowedDate2,
-        } as any);
 
       const response = await request(app).get('/api/books/borrowed?userId=1');
 

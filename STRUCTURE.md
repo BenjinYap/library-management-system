@@ -120,9 +120,9 @@ backend/
 
 - **`src/index.ts`**: Express server setup, CORS configuration, route mounting
 - **`src/prisma.ts`**: Prisma client singleton used across the application
-- **`src/routes/books.ts`**: Books API endpoints - list available books, get all borrowed books for a user, get borrowed book details with datetime
-- **`src/routes/checkout.ts`**: Checkout API endpoint with race condition handling at SQL level, validates user doesn't already have a copy of the specific book checked out
-- **`src/routes/return.ts`**: Return API endpoint with race condition handling at SQL level
+- **`src/routes/books.ts`**: Books API endpoints - list available books, get all borrowed books for a user with borrowedDatetime from BookCopy, get borrowed book details with datetime from BookCopy
+- **`src/routes/checkout.ts`**: Checkout API endpoint with race condition handling at SQL level, validates user doesn't already have a copy of the specific book checked out, sets borrowedDatetime on BookCopy
+- **`src/routes/return.ts`**: Return API endpoint with race condition handling at SQL level, clears borrowedDatetime on BookCopy
 - **`src/routes/user.ts`**: User API endpoint for fetching user information by ID
 - **`prisma/schema.prisma`**: Database schema with 4 models (User, Book, BookCopy, BookCopyLendingHistory)
 - **`prisma/seed.ts`**: Database seeding script for initial data
@@ -143,7 +143,7 @@ The Prisma schema defines the following models:
    - Relations: bookCopies (one-to-many)
 
 3. **BookCopy**: Physical copies of books
-   - Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED)
+   - Fields: id, bookId, currentUserId, status (AVAILABLE/BORROWED), borrowedDatetime
    - Relations: book, currentUser, bookCopyLendingHistories
 
 4. **BookCopyLendingHistory**: Audit log of borrowing/returns
@@ -182,10 +182,10 @@ The Prisma schema defines the following models:
 The backend exposes the following API routes:
 
 - **GET /api/books** - Get all books that are available for checkout (returns books with at least one available copy)
-- **GET /api/books/borrowed?userId={id}** - Get all borrowed books for a user (requires userId query parameter, returns array of borrowed books with title, author, and borrowed datetime)
-- **GET /api/books/:bookId/borrowed-info?userId={id}** - Get borrowed book details with borrowed datetime (requires userId query parameter, returns book details and borrowed datetime for a specific borrowed book)
-- **POST /api/checkout** - Checkout a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, validates user doesn't already have a copy of that specific book checked out)
-- **POST /api/return** - Return a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, ensures row was actually updated)
+- **GET /api/books/borrowed?userId={id}** - Get all borrowed books for a user (requires userId query parameter, returns array of borrowed books with title, author, and borrowed datetime from BookCopy.borrowedDatetime)
+- **GET /api/books/:bookId/borrowed-info?userId={id}** - Get borrowed book details with borrowed datetime (requires userId query parameter, returns book details and borrowed datetime from BookCopy.borrowedDatetime for a specific borrowed book)
+- **POST /api/checkout** - Checkout a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, validates user doesn't already have a copy of that specific book checked out, sets BookCopy.borrowedDatetime)
+- **POST /api/return** - Return a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, ensures row was actually updated, clears BookCopy.borrowedDatetime)
 - **GET /api/user/:id** - Get user information by ID (returns user's id and fullName)
 
 Base URL: `http://localhost:3001`
