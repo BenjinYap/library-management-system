@@ -1,7 +1,22 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+
+interface User {
+  id: number
+  fullName: string
+}
 
 function Navigation() {
   const location = useLocation()
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    // Fetch user info for user ID 1 (hardcoded current user)
+    fetch('http://localhost:3001/api/user/1')
+      .then(res => res.json())
+      .then(data => setUser(data))
+      .catch(err => console.error('Error fetching user:', err))
+  }, [])
 
   const isActive = (path: string) => {
     return location.pathname === path
@@ -18,20 +33,27 @@ function Navigation() {
               Library Management System
             </h1>
           </div>
-          <nav className="flex space-x-4">
-            <Link
-              to="/"
-              className={`${isActive('/')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              className={`${isActive('/about')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
-            >
-              About
-            </Link>
-          </nav>
+          <div className="flex items-center space-x-4">
+            <nav className="flex space-x-4">
+              <Link
+                to="/"
+                className={`${isActive('/')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
+              >
+                Home
+              </Link>
+              <Link
+                to="/about"
+                className={`${isActive('/about')} px-3 py-2 rounded-md text-sm font-medium transition-colors`}
+              >
+                About
+              </Link>
+            </nav>
+            {user && (
+              <div className="text-sm text-gray-300 pl-4 border-l border-gray-600">
+                {user.fullName}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

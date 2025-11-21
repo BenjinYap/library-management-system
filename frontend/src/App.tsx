@@ -3,6 +3,7 @@ import Navigation from './components/Navigation'
 import Home from './pages/Home'
 import About from './pages/About'
 import Checkout from './pages/Checkout'
+import Return from './pages/Return'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/checkout/:bookId" element={<Checkout />} />
+            <Route path="/return/:bookId" element={<Return />} />
           </Routes>
         </main>
       </div>

@@ -6,14 +6,16 @@ interface Book {
   title: string
   author: string
   availableCopies: number
+  borrowedByUser: boolean
 }
 
 function Home() {
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
+  const currentUserId = 1 // Hardcoded current user ID
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/books')
+    fetch(`http://localhost:3001/api/books?userId=${currentUserId}`)
       .then(res => res.json())
       .then(data => {
         console.log('Books:', data)
@@ -70,15 +72,29 @@ function Home() {
                       <div className="text-sm text-gray-600">{book.author}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{book.availableCopies}</div>
+                      <div className="text-sm text-gray-900">
+                        {book.availableCopies}
+                        {book.borrowedByUser && (
+                          <span className="ml-2 text-xs text-green-600 font-medium">(borrowed)</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        to={`/checkout/${book.id}`}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                      >
-                        Checkout
-                      </Link>
+                      {book.borrowedByUser ? (
+                        <Link
+                          to={`/return/${book.id}`}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                        >
+                          Return
+                        </Link>
+                      ) : (
+                        <Link
+                          to={`/checkout/${book.id}`}
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        >
+                          Checkout
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}

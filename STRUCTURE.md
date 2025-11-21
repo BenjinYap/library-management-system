@@ -50,11 +50,12 @@ library-management-system/
 frontend/
 ├── src/
 │   ├── components/        # Reusable React components
-│   │   └── Navigation.tsx # Main navigation bar with routing
+│   │   └── Navigation.tsx # Main navigation bar with routing and user display
 │   ├── pages/             # Page-level components
-│   │   ├── Home.tsx       # Home page (book listing table)
+│   │   ├── Home.tsx       # Home page (book listing table with borrowed status)
 │   │   ├── About.tsx      # About page
-│   │   └── Checkout.tsx   # Checkout page
+│   │   ├── Checkout.tsx   # Checkout page
+│   │   └── Return.tsx     # Return page (placeholder)
 │   ├── assets/            # Static assets (images, fonts)
 │   ├── App.tsx            # Root component with router setup
 │   ├── main.tsx           # Application entry point
@@ -74,11 +75,12 @@ frontend/
 
 ### Frontend Key Files
 
-- **`src/App.tsx`**: Router setup with BrowserRouter, defines routes for "/", "/about", and "/checkout/:bookId"
-- **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting
-- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout buttons
+- **`src/App.tsx`**: Router setup with BrowserRouter, defines routes for "/", "/about", "/checkout/:bookId", and "/return/:bookId"
+- **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting and logged-in user display in top right
+- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout/return buttons and borrowed status indicator
 - **`src/pages/About.tsx`**: Static about page with project information
 - **`src/pages/Checkout.tsx`**: Book checkout page with book details display, checkout confirmation, success/error handling
+- **`src/pages/Return.tsx`**: Book return page (placeholder, not yet implemented)
 - **`src/main.tsx`**: ReactDOM render entry point
 
 ## Backend Structure (`/backend`)
@@ -87,9 +89,10 @@ frontend/
 backend/
 ├── src/
 │   ├── routes/            # API route handlers
-│   │   ├── books.ts       # GET /api/books - List available books
+│   │   ├── books.ts       # GET /api/books - List available books with borrowed status
 │   │   ├── checkout.ts    # POST /api/checkout - Checkout a book
-│   │   └── return.ts      # POST /api/return - Return a book
+│   │   ├── return.ts      # POST /api/return - Return a book
+│   │   └── user.ts        # GET /api/user/:id - Get user information
 │   ├── __tests__/         # Unit tests
 │   │   ├── setup.ts       # Jest test setup
 │   │   ├── prisma-mock.ts # Prisma mocking configuration
@@ -112,9 +115,10 @@ backend/
 
 - **`src/index.ts`**: Express server setup, CORS configuration, route mounting
 - **`src/prisma.ts`**: Prisma client singleton used across the application
-- **`src/routes/books.ts`**: Books API endpoint (fully implemented with Prisma)
+- **`src/routes/books.ts`**: Books API endpoint with borrowed status tracking (accepts userId query parameter)
 - **`src/routes/checkout.ts`**: Checkout API endpoint with race condition handling at SQL level
 - **`src/routes/return.ts`**: Return API endpoint (placeholder, not yet implemented)
+- **`src/routes/user.ts`**: User API endpoint for fetching user information by ID
 - **`prisma/schema.prisma`**: Database schema with 4 models (User, Book, BookCopy, BookCopyLendingHistory)
 - **`prisma/seed.ts`**: Database seeding script for initial data
 - **`jest.config.js`**: Jest test configuration with ts-jest and ESM support
@@ -172,9 +176,10 @@ The Prisma schema defines the following models:
 
 The backend exposes the following API routes:
 
-- **GET /api/books** - Get all books that are available for checkout (returns books with at least one available copy)
+- **GET /api/books?userId={id}** - Get all books that are available for checkout with borrowed status (returns books with at least one available copy, includes borrowedByUser field if userId provided)
 - **POST /api/checkout** - Checkout a single book copy (requires bookId and userId in request body, handles race conditions at SQL level)
 - **POST /api/return** - Return a single book (not yet implemented)
+- **GET /api/user/:id** - Get user information by ID (returns user's id and fullName)
 
 Base URL: `http://localhost:3001`
 
