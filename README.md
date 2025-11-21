@@ -22,7 +22,21 @@ Launch the local Docker container for MySQL:
 sudo docker compose up
 ```
 
-Run the MySQL seed script to prepopulate with some data:
+Create `backend/.env` with the following:
+
+```
+PORT=3001
+DATABASE_URL="mysql://root:password@localhost:3306/library_management"
+```
+
+Run the Prisma migrations to initialize the database tables:
+
+```
+cd backend
+npx prisma migrate dev
+```
+
+Return to the root folder, then run the MySQL seed script to prepopulate with some data:
 
 ```
 npm run seed
