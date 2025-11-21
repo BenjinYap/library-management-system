@@ -2,6 +2,12 @@
 
 A monorepo for an online library book checkout/return application.
 
+These files were only used to help the AI, you can read them or not:
+
+* PROJECT.md
+* TESTS.md
+* STRUCTURE.md
+
 # Local Development
 
 ## Prerequisites
@@ -94,6 +100,32 @@ Similar to the UserContext, a BookContext of some kind could be used as follows:
 
 * TypeScript
 * Express
+
+### Concurrency 1
+
+The endpoints for checking out and returning are designed such that they only return a success if they actually
+succeed in performing their final action of updating the status. This is achieved by something like this:
+
+```
+UPDATE book_copy
+SET status = 'BORROWED'
+WHERE id = 5
+AND status = 'AVAILABLE'
+```
+
+This query is run and we check the actual updated rows from that query to see whether it's a 1 or 0. If it's a 1 then it means
+we were able to borrow it successfully. If it's a 0 it means another user "swooped in" at the exact same time and was able to
+borrow it a split second before this request.
+
+This prevents the endpoint from incorrectly returning a success response and ensuring the user sees the correct
+result.
+
+### Concurrency 2
+
+If in the future the amount of users checking out and returning grows so immensely that the endpoints can no longer
+handle process immediate requests, we can shift to a queue model where users submitting the forms instead push to a 
+check-out or return queue and a separate background process will handle the queue and do the actual processing. This allows
+the website and background queue processor to be scaled at different capacities.
 
 ## Database
 
