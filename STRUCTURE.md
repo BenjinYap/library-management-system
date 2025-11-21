@@ -52,8 +52,9 @@ frontend/
 │   ├── components/        # Reusable React components
 │   │   └── Navigation.tsx # Main navigation bar with routing
 │   ├── pages/             # Page-level components
-│   │   ├── Home.tsx       # Home page (book listing)
-│   │   └── About.tsx      # About page
+│   │   ├── Home.tsx       # Home page (book listing table)
+│   │   ├── About.tsx      # About page
+│   │   └── Checkout.tsx   # Checkout page
 │   ├── assets/            # Static assets (images, fonts)
 │   ├── App.tsx            # Root component with router setup
 │   ├── main.tsx           # Application entry point
@@ -73,10 +74,11 @@ frontend/
 
 ### Frontend Key Files
 
-- **`src/App.tsx`**: Router setup with BrowserRouter, defines routes for "/" and "/about"
+- **`src/App.tsx`**: Router setup with BrowserRouter, defines routes for "/", "/about", and "/checkout/:bookId"
 - **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting
-- **`src/pages/Home.tsx`**: Fetches and displays books from API (http://localhost:3001/api/books)
+- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout buttons
 - **`src/pages/About.tsx`**: Static about page with project information
+- **`src/pages/Checkout.tsx`**: Book checkout page (placeholder)
 - **`src/main.tsx`**: ReactDOM render entry point
 
 ## Backend Structure (`/backend`)
