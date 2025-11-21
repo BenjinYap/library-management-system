@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useUser } from '../contexts/UserContext'
 
 interface BorrowedBook {
@@ -12,7 +12,6 @@ interface BorrowedBook {
 
 function Return() {
   const { bookId } = useParams()
-  const navigate = useNavigate()
   const { userId } = useUser()
   const [book, setBook] = useState<BorrowedBook | null>(null)
   const [loading, setLoading] = useState(true)
@@ -66,9 +65,6 @@ function Return() {
       }
 
       setSuccess(true)
-      setTimeout(() => {
-        navigate('/')
-      }, 2000)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to return book')
       setReturning(false)
