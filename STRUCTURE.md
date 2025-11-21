@@ -80,7 +80,7 @@ frontend/
 - **`src/App.tsx`**: Router setup with BrowserRouter wrapped in UserProvider, defines routes for "/", "/about", "/checkout/:bookId", and "/return/:bookId"
 - **`src/contexts/UserContext.tsx`**: React Context for managing current user state, provides useUser hook for accessing user data throughout the app
 - **`src/components/Navigation.tsx`**: Navigation bar with active link highlighting and logged-in user display in top right (uses UserContext)
-- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout/return buttons and borrowed status indicator (uses UserContext)
+- **`src/pages/Home.tsx`**: Displays available books in a responsive table with checkout buttons, no user-specific logic
 - **`src/pages/About.tsx`**: Static about page with project information
 - **`src/pages/Checkout.tsx`**: Book checkout page with book details display, checkout confirmation, success/error handling, prevents checkout if user already has a copy of that specific book borrowed (uses UserContext)
 - **`src/pages/Return.tsx`**: Book return page with borrowed datetime display, return confirmation, success/error handling (uses UserContext)
@@ -118,7 +118,7 @@ backend/
 
 - **`src/index.ts`**: Express server setup, CORS configuration, route mounting
 - **`src/prisma.ts`**: Prisma client singleton used across the application
-- **`src/routes/books.ts`**: Books API endpoints - list available books with borrowed status, get borrowed book details with datetime
+- **`src/routes/books.ts`**: Books API endpoints - list available books, get borrowed book details with datetime
 - **`src/routes/checkout.ts`**: Checkout API endpoint with race condition handling at SQL level, validates user doesn't already have a copy of the specific book checked out
 - **`src/routes/return.ts`**: Return API endpoint with race condition handling at SQL level
 - **`src/routes/user.ts`**: User API endpoint for fetching user information by ID
@@ -179,7 +179,7 @@ The Prisma schema defines the following models:
 
 The backend exposes the following API routes:
 
-- **GET /api/books?userId={id}** - Get all books that are available for checkout with borrowed status (returns books with at least one available copy, includes borrowedByUser field if userId provided)
+- **GET /api/books** - Get all books that are available for checkout (returns books with at least one available copy)
 - **GET /api/books/:bookId/borrowed-info?userId={id}** - Get borrowed book details with borrowed datetime (requires userId query parameter, returns book details and borrowed datetime for a specific borrowed book)
 - **POST /api/checkout** - Checkout a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, validates user doesn't already have a copy of that specific book checked out)
 - **POST /api/return** - Return a single book copy (requires bookId and userId in request body, handles race conditions at SQL level, ensures row was actually updated)
